@@ -68,9 +68,8 @@ private:
     int debug_level = 0;
 
     // Threading
-    Ref<Thread> lod_loop_thread;
-    Ref<Semaphore> lod_objects_semaphore;
-    Ref<Semaphore> manager_removed_semaphore;
+    Ref<Thread> lod_loop_thread = Ref<Thread>();
+    Ref<Semaphore> lod_objects_semaphore = Ref<Semaphore>();
 
     void main_loop();
     void lod_function();
