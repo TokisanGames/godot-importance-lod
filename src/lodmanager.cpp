@@ -123,7 +123,7 @@ void LODManager::_ready() {
     if (use_multithreading) {
         debug_level_print(DEBUG_PRINT_ACTIONS, "LODManager: Creating the Semaphore for the LOD thread.");
         // Do it before the update LOD mults and FOV call because it's used there
-        lod_objects_semaphore = Ref<Semaphore>(new Semaphore());
+        lod_objects_semaphore.instantiate();
         lod_objects_semaphore->post();
     }
     debug_level_print(DEBUG_PRINT_ACTIONS, "LODManager: Setting up the camera.");
@@ -140,7 +140,7 @@ void LODManager::_ready() {
     if (use_multithreading) {
         // Start thread
         debug_level_print(DEBUG_PRINT_ACTIONS, "Starting the LOD thread.");
-        lod_loop_thread = Ref<Thread>(new Thread());
+        lod_loop_thread.instantiate();
         Callable main_loop_callable = Callable(this, "main_loop").bind();
         lod_loop_thread->start(main_loop_callable);
     }
@@ -314,10 +314,14 @@ void LODManager::stop_loop() {
 
     if (lod_loop_thread.is_valid() && lod_loop_thread->is_started()) {
         lod_loop_thread->wait_to_finish();
-        // Godot will clean up the objects once they have no references.
-        lod_loop_thread.unref();
-        lod_objects_semaphore.unref();
-    }
+       
+        if(lod_loop_thread.is_valid()){
+            lod_loop_thread.unref();
+        }
+        if(lod_objects_semaphore.is_valid()){
+            lod_objects_semaphore.unref();
+        }
+     }
 }
 
 bool LODManager::add_object(LODObject* lod_object) {
